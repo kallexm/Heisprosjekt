@@ -1,0 +1,83 @@
+1. Thinking about elevators
+	What if the software controlling one of the elvators suddeny crashes?
+	What if it doesn't crash, but hangs?
+		Noder/prosesser sjekker hverandres status ved å ping'e/be om status (Global Housekeeping)
+		Noder/prosesser sjekker status på egene tråder (Local Housekeeping)
+
+    
+
+    What if a message between machines is lost?	
+    	Be om bekreftelse på motatt melding og resende etter en tid hvis en ikke får dette. Etter lengre tid må orderen håndteres av noden selv.
+
+    	Viktige meldinger som må komme frem må bekreftes med bekreftelsesmelding.
+    	Bekreftelsesmeldinger trenger ikke bekreftelsesmelding,
+    	må gi hver melding/oversendelse et timestamp eller ID slik.
+    	(Tenke mer på dette!)
+
+    What if the network cable is suddenly disconnected? Then re-connected?
+    	Noden som blir frakoblet må forandre sin status og begynne å håndtere ordrer på egenhånd og opperere som en enslig node. Samtidig som den prøver å nå de andre nodene med meldinger.
+    	De andre nodene må detektere at noden har blitt frakoblet og slutte å sende enkelte meldinger.
+    
+    What if a user of the system is being a troll?
+    	Håndtere at flere knapper holdes inne/trykkes inn samtidig.
+    	Flere trykk på samme tast etterhverandre gir ikke flere like ordrer.
+
+
+    What if the elevator car never arrives at its destination?
+    	Ordrene må finnes flere steder slik at hvis den som holder på orderen kræsjer som vil orderen fortsatt finnes et sted, klar til utførelse.
+
+
+
+2. Set up source control and build tools
+	Git Version control
+	sublime text editor (ikke spikret)
+	språk ikke bestemt
+	compiler ikke bestemt
+
+
+
+3. Reasons for concurrency and parallelism
+	Concurrency - Oppgaver som er uavhengige av hverandre og som ikke må utføres i en spesiell rekkefølge. Den ene oppgaven trenger ikke data fra den andre oppgaven.
+	Parallelism - Oppgaver kan utføres samtidig og kan være avhengig av andre parallelle oppgaver.
+
+	"Concurrency is about dealing with lots of things at once. Parallelism is about doing lots of things at once."
+
+
+    What is concurrency? What is parallelism? What's the difference?
+    	Concurrency - Oppgaver som er uavhengige av hverandre og som ikke må utføres i en spesiell rekkefølge. Den 					ene oppgaven trenger ikke data fra den andre oppgaven.
+		Parallelism - Oppgaver kan utføres samtidig og kan være avhengig av andre parallelle oppgaver.
+
+		"Concurrency is about dealing with lots of things at once. Parallelism is about doing lots of things at once."
+
+
+
+    Why have machines become increasingly multicore in the past decade?
+    	Forsøk på å gjøre maskinene i stand til å gjøre mer jobb på mindre tid, gitt at vi ikke greier å gjøre en enkelt prosessor raskere. (Lysfart, varme problemer)
+
+
+    What kinds of problems motivates the need for concurrent execution? (Or phrased differently: What problems do concurrency help in solving?)
+    	Muligheten til å kjøre flere prosesser på en gang. (Grunnlaget for et sanntidssystem, datamaskinen oppdaterer skjerm "samtidig" som den mottar tastetrykk)
+
+
+    Does creating concurrent programs make the programmer's life easier? Harder? Maybe both? (Come back to this after you have worked on part 4 of this exercise)
+    	Burde vel bli lettere da prosesser er uavhengige, mindre å tenke på på en gang. Må samtidig bruke er tid på å opprettholde concurrency. Må passe på å ikke bryte concurrency. Bruke tid på å designe og tenke gjennom hvordan programmet skal bygges opp.
+
+    
+	What are the differences between processes, threads, green threads, and coroutines?
+    	Prosseser innehar programkode og data og har en til flere tråder. Tråder har ikke data, men utfører programkoden til prosessen som eier den. Grønne tråder er tråder som blir "planlagt" (scheduled) av et bibliotek eller virtuell maskin. Grønne tråder avhenger ikke av OS'ets evene til å håndtere programmer/prosesser.
+
+    	Coroutines er subrutioner (metoder, funksjoner, osv.) som gir fra seg kontroll over prosessor under veis i kjøringen.
+
+
+    Which one of these do pthread_create() (C/POSIX), threading.Thread() (Python), go (Go) create?
+    	pthread_create() oppretter en thread.
+    	Threading.Thread() oppretter en OS kontrollert thread, men noe spesielt pga GIL (global interpreter lock).
+    	Go oppretter coroutines som ligner på green threads, men det er en forskjell.
+
+    How does pythons Global Interpreter Lock (GIL) influence the way a python Thread behaves?
+    
+
+    With this in mind: What is the workaround for the GIL (Hint: it's another module)?
+    
+
+    What does func GOMAXPROCS(n int) int change?
