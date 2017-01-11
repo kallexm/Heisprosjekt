@@ -74,10 +74,14 @@
     	Threading.Thread() oppretter en OS kontrollert thread, men noe spesielt pga GIL (global interpreter lock).
     	Go oppretter coroutines som ligner på green threads, men det er en forskjell.
 
+		
+		
     How does pythons Global Interpreter Lock (GIL) influence the way a python Thread behaves?
-    
+		Bare en tråd kan kjøre igangen, selv om det er flere kjerner på prosessoren.
+		
 
     With this in mind: What is the workaround for the GIL (Hint: it's another module)?
-    
+		En må kjøre flere python interpreters gjennom å benytte multiprocess modulen. For så å dele et minneområde mellom prosessene.
 
     What does func GOMAXPROCS(n int) int change?
+		Setter maksgrense for hvor mange tråder som go corutinene kan fordeles over.
