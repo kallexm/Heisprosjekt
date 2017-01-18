@@ -1,0 +1,19 @@
+Exercise 2: Bottlenecks
+
+Mutex and Channel basics:
+
+An atomic operation?
+	En sammenhengelde del av kode hvor alt henger sammen og må utføres før noe annet kan bli foretatt.
+	Udelelig kode.
+	Skjer tilsynelatende med en gang for systemet/andre tråder.
+
+A semaphore?
+	Mekanisme for å beskytte kritiske områder. Variabel kalt semaphore hvor to atomiske funksjoner wait(int semaphore) og signal(int semaphore) increamenterer og decrementerer variabelen. Kan brukes til å håndtere mutual exclution.
+
+A mutex?
+	Annet ord er lås. Bygd på en binær semaphore. Bare tråder som har gått inn i det kritiske området kan åpne låsen.
+
+A critical section?
+	En blokk med kode som må utføres sammenhengende uten inngripen fra andre tråder. Utføres under mutual exclution.
+
+
