@@ -5,4 +5,10 @@ https://github.com/TTK4145/Exercises
 link for å interface go og C: https://github.com/golang/go/blob/master/misc/cgo/gmp/gmp.go
 
 
+Enkelt oppset av UDP client og Server
+https://varshneyabhi.wordpress.com/2014/12/23/simple-udp-clientserver-in-golang/
+Interesang link TCP 
+http://loige.co/simple-echo-server-written-in-go-dockerized/
+
 Sett opp en slags config fil for Go
+
