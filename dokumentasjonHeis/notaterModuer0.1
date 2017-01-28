@@ -1,0 +1,85 @@
+
+Her er en overskik over hva hver modul skall gjøre og hva den vet.
+Flyttet vekking av MASTER til MASTER så HK ikke trenger å vite om antall aktive heiser og rekkeføgen på den. Dette kan være domt siden MASTER ble veldig stor. Det er mulig vi kan løse dette med å lage en ny modul som tar seg av dette valget og å passe på at odrene blir bekreftet utført. Problemet er at denne modulen må dele listen med aktive heiser med MASTER.
+
+HEIS:
+	Primærfunksjon: Den har som hovedoppgave å styre heisen og holde styr på tilstanden til heisen.
+
+	Variabler: 
+	-Etasje
+	-Motor //Op, ned, i ro
+	-Dør //Åpen, lukket
+	-Ordre
+	-Matrise med knappeys 
+
+	Interaksjon med andre moduler:
+	-På knappetrykk sender meldig til NET(Skall videresendes til MASTER) og HK
+	-PÅ endring i tilstand sender melding til NET(Skall videresendes til MASTER) og HK(Eksempel kommer til ny etasje)
+	-Får melding fra NET(Kommer fra MASTER) om nye ordre 
+	-Får medign fra NET(Kommer fra MASTER) om lys som skall settes.
+
+NET:
+	Primæfunksjon: Har som oppgave og videreformide medinger den får fra andre tråder som skall til andre heiser. Skall sortere melldinger som kommer fra andre heiser og sende de til riktig tråd. 
+
+	Variabler:  
+	-Matrise med IP adresse til de andre heisene
+	-IP adresse til heisen som har aktiv MASTER
+
+	Interaksjon med andre moduler:
+	-Kan få melding fra alle moduler og sender de til riktig heis.
+	-Sender meldinger fra andre heiser til riktig modul
+	-Sender melding til MASTER om at den har fåt kontakt med en ny HEIS
+
+MASTER:
+	Primærfunksjon: Hollder styr på alle ordre. Bestemer hvilken heis som skall utføre hver enkelt ordere. 
+
+	Variabler:
+	-Struct. HeisTilstand. //For hver heis har den et struct som inneholder tilstandene til heisen + hvilken ordere heisen utfører. 
+	-Ordere // En liste med alle orderene som skall utføres. 
+	-HeiserPåNet // En liste med hvilke heiser som er på net.
+	-PrioriteringsNr// Hvilken prioritering den har for å bli master.  
+	-TimeOutOrdere// Sier hvor lenge hver aktive ordere har foregått.
+	-TimeOutMaster// Tiden siden sist den fikk et ping fra AKTIVEMASTER
+
+	Interaksjon med andre moduler:
+	-Sender melding til NET(skall til HEIS) om setting av lys.
+	-Sender melding til NET(skall til HEIS) om ny ordere.
+	-Motar ny ordere fra HEIS(gjenom NET)
+	-Motar endring i tilstand til HEIS(gjenom NET)
+	-Motar melding om at ny heis har kommet(fra NET)
+	-Ber om å få tilstandene/variablene til de BACKUPMASTERene(gjenom NET)
+	-Sender kopi av oppdaterte tilsdander/variabler til BACKUPMASTERene(gjenom NET)
+	-Pinger BACKUPMASTERene(gjenom NET)
+	-Spør andre BACKUPMASTERe(gjenom NET) om den kan bli ACTIVEMASTER
+	-Sender melding til NET(skall til HK) om at ny ordere har blit prosesert riktig
+	-Motar ping(gjenom NET) fra andre heiser sin HK
+	-Motar melding fra andre heiser sin HK(gjenom NET) om at heisen er ut av drift. 
+
+HK(house kepper):
+	Primærfunksjon: Overvåker den generele helsen til sin heis.
+
+	Variabler: 
+	-TimeOutMasterAceptedOrder // tid siden ny ordere ble sendt til MASTER uten svar.
+	-Ordere// En liste med ordere som heisen har motat som ikke har blit akseptert av MASTER. 
+	-TimeOutHeisNewState// tid siden heisen har oppdater sin tilstand. 
+
+	Interaksjon med andre moduler:
+	-Motar melding fra HEIS om at en ny ordere har blit motat.
+	-Pinger ACTIVEMASTER(gjenom NET) for å si at heisen er i live.
+	-Sender melding til ACTIVEMASTER(gjenom NET)om at heisen er ut av drift.
+    -Motar melding fra ACTIVEMASTER(gjenom NET) om at en ordere har blit prosessert riktig. 
+	-Sender ordere på nyt om det blir timeout til ACTIVEMASTER(gjenom NET).    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
