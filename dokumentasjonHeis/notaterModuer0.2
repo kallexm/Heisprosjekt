@@ -240,3 +240,34 @@ De andre backup master prosessene tar over i tilfelle prosessen kjæser eller ne
 
 (- Acknolage meldinger på enkelte deler av data og be om resendelsefor å unngå at dataen blir borte.)
 (-Legge til parity bits i meldinger over channels for å kunne detektere bit-flips.)
+
+
+
+#################################################################
+Oppdeling av system:
+
+
+
+NET:
+dele opp i:
+1- Modul som holder orden på forbindelser; IP, port, nodestatus (master/backup). Passer på at data ikke blir korrupert av bitflips med n-flex lagring. {nodeConnectionTable}
+
+2- Modul med funksjoner rundt det å sende og motta data mellom nodene. {nodeCommunicationModule}
+
+3- Modul som bestemmer oppførsel til nettverkstråd som benytter de andre net modulene. {nodeCommunicationThread}
+
+HEIS:
+dele opp i:
+1- Modul som holder orden på heis status og neste ordre. Sørger for at heis status data ikke blir korrupert. {ElevatorStatusModule}
+2- modul som bestemmer oppførsel til heisDriverTråd. {ElevatorControlThread}
+3- Underliggende heisdriver. {elev.h, elec.c}
+(4- Underliggende kodeoversetter fra C til Go {})
+
+MASTER:
+dele opp i:
+1- Modul som holder orden på heisenes køer og heisStatus, og at disse ikke blir korrupert {orderQueueModule}
+2- Modul som inneholder "costFunction" som blir brukt til å velge hvilken heis som skal gjøre hva. {orderEvaluatorModule}
+3- Modul som bestemmer oppførsel til ordrehåndteringsTråden. {orderHandlerThread}
+4- Modul som inneholder hearthbeat logikk og backupNode overtagelses logikk {ProcessPairControl}
+
+
