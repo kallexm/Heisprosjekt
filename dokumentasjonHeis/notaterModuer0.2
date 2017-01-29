@@ -226,3 +226,17 @@ MASTER:
 
 
 
+
+
+#################################################################
+Fault tolerance and avoidance:
+
+- Process pair: Master prosessen som holder kontroll på hva de forskjellige heisene skal gjøre og avgjøre hvilke heiser som skal ta hvilke ordre, lagrer kopier av seg selv som oppdateres hver gang det kommer en ny melding om tilstandsendring eller ny ordre.
+De andre backup master prosessene tar over i tilfelle prosessen kjæser eller nettet faller ut. Benytter hearthbeat meldinger fra master i masternode til backupmasters i de andre nodene for å kunne detektere om master har kræsjet eller hengt seg.
+
+- n-plex lagring: lagre heistilstand (heis og master/backupmaster), køtilstand(master/backupmaster) og nettverksstatus(nettverksmodul) i tre eksemplarer, og hver gang det skal leses fra minne skal de tre versjonene sammenlignes og hvis det er en forskjell mellom de tre versjonene skal det genereres en feilmelding til en logg og det resultatet som flest av de tre versjonene har vil da være riktig data. Dette gjøres for å hindre at bit-flips kan sette heisen i en uriktig tilstand.
+
+- Benytte TCP for transport av data mellom nodene for å hindre at data blir korrupert under transport.
+
+(- Acknolage meldinger på enkelte deler av data og be om resendelsefor å unngå at dataen blir borte.)
+(-Legge til parity bits i meldinger over channels for å kunne detektere bit-flips.)
