@@ -248,7 +248,11 @@ Oppdeling av system:
 
 
 
+<<<<<<< HEAD
 NodeCommunication:
+=======
+NET:
+>>>>>>> 61381c16d7e4789f0e8378dbc6654741d8a1c443
 dele opp i:
 1- Modul som holder orden på forbindelser; IP, port, nodestatus (master/backup). Passer på at data ikke blir korrupert av bitflips med n-flex lagring. {nodeConnectionTable}
 
@@ -256,14 +260,22 @@ dele opp i:
 
 3- Modul som bestemmer oppførsel til nettverkstråd som benytter de andre net modulene. {nodeCommunicationThread}
 
+<<<<<<< HEAD
 ElevatorControl:
+=======
+HEIS:
+>>>>>>> 61381c16d7e4789f0e8378dbc6654741d8a1c443
 dele opp i:
 1- Modul som holder orden på heis status og neste ordre. Sørger for at heis status data ikke blir korrupert. {ElevatorStatusModule}
 2- modul som bestemmer oppførsel til heisDriverTråd. {ElevatorControlThread}
 3- Underliggende heisdriver. {elev.h, elec.c}
 (4- Underliggende kodeoversetter fra C til Go {})
 
+<<<<<<< HEAD
 OrderManager:
+=======
+MASTER:
+>>>>>>> 61381c16d7e4789f0e8378dbc6654741d8a1c443
 dele opp i:
 1- Modul som holder orden på heisenes køer og heisStatus, og at disse ikke blir korrupert {orderQueueModule}
 2- Modul som inneholder "costFunction" som blir brukt til å velge hvilken heis som skal gjøre hva. {orderEvaluatorModule}

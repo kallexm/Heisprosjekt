@@ -15,11 +15,11 @@ func CheckError(err error) {
  
 func main() {
     //Sets up the address for the server
-    ServerAddr,err := net.ResolveUDPAddr("udp","10.22.72.203:50002")
+    ServerAddr,err := net.ResolveUDPAddr("udp","129.241.187.43:20002")
     CheckError(err)
  
     //Sets up the local address 
-    LocalAddr, err := net.ResolveUDPAddr("udp", "10.22.72.203:50000")
+    LocalAddr, err := net.ResolveUDPAddr("udp", "129.241.187.149:20000")
     CheckError(err)
  
 
@@ -40,14 +40,16 @@ func main() {
         if err != nil {
             fmt.Println(msg, err)
         }
+        /*
         //resives msg from server 
         buf = make([]byte, 1024)
         n,addr,err := Conn.ReadFrom(buf)
-        fmt.Println("Received ",string(buf[0:n]), " from ",addr)
-
         if err != nil {
             fmt.Println("Error: ",err)
         } 
+        fmt.Println("Received ",string(buf[0:n]), " from ",addr)
+        */
+        //fmt.Println("Test")
         time.Sleep(time.Second * 2)
     }
 }

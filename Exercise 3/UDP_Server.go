@@ -16,7 +16,7 @@ func CheckError(err error) {
  
 func main() {
     /* Lets prepare a address at any address at port 50002*/   
-    listAddr,err := net.ResolveUDPAddr("udp",":50002")
+    listAddr,err := net.ResolveUDPAddr("udp",":20002")
     CheckError(err)
 
 
@@ -33,11 +33,11 @@ func main() {
         if err != nil {
             fmt.Println("Error: ",err)
         }
-
+        /*
         //sends resived msg back. 
         _,err = ServerConn.WriteTo(buf[0:n],addr)
         if(err != nil){
         	fmt.Println(string(buf[0:n]),err)
-        } 
+        }*/
     }
 }
