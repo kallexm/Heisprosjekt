@@ -1,8 +1,8 @@
 
 Her er en overskik over hva hver modul skall gjøre og hva den vet.
-Flyttet vekking av MASTER til MASTER så HK ikke trenger å vite om antall aktive heiser og rekkeføgen på den. Dette kan være domt siden MASTER ble veldig stor. Det er mulig vi kan løse dette med å lage en ny modul som tar seg av dette valget og å passe på at odrene blir bekreftet utført. Problemet er at denne modulen må dele listen med aktive heiser med MASTER.
+Flyttet vekking av OrderManager til OrderManager så HK ikke trenger å vite om antall aktive heiser og rekkeføgen på den. Dette kan være domt siden OrderManager ble veldig stor. Det er mulig vi kan løse dette med å lage en ny modul som tar seg av dette valget og å passe på at odrene blir bekreftet utført. Problemet er at denne modulen må dele listen med aktive heiser med OrderManager.
 
-HEIS:
+ElevatorControl:
 	Primærfunksjon: Den har som hovedoppgave å styre heisen og holde styr på tilstanden til heisen.
 
 	Variabler: 
@@ -13,24 +13,24 @@ HEIS:
 	-Matrise med knappeys 
 
 	Interaksjon med andre moduler:
-	-På knappetrykk sender meldig til NET(Skall videresendes til MASTER) og HK
-	-PÅ endring i tilstand sender melding til NET(Skall videresendes til MASTER) og HK(Eksempel kommer til ny etasje)
-	-Får melding fra NET(Kommer fra MASTER) om nye ordre 
-	-Får medign fra NET(Kommer fra MASTER) om lys som skall settes.
+	-På knappetrykk sender meldig til NodeCommunication(Skall videresendes til OrderManager) og HK
+	-PÅ endring i tilstand sender melding til NodeCommunication(Skall videresendes til OrderManager) og HK(Eksempel kommer til ny etasje)
+	-Får melding fra NodeCommunication(Kommer fra OrderManager) om nye ordre 
+	-Får medign fra NodeCommunication(Kommer fra OrderManager) om lys som skall settes.
 
-NET:
+NodeCommunication:
 	Primæfunksjon: Har som oppgave og videreformide medinger den får fra andre tråder som skall til andre heiser. Skall sortere melldinger som kommer fra andre heiser og sende de til riktig tråd. 
 
 	Variabler:  
 	-Matrise med IP adresse til de andre heisene
-	-IP adresse til heisen som har aktiv MASTER
+	-IP adresse til heisen som har aktiv OrderManager
 
 	Interaksjon med andre moduler:
 	-Kan få melding fra alle moduler og sender de til riktig heis.
 	-Sender meldinger fra andre heiser til riktig modul
-	-Sender melding til MASTER om at den har fåt kontakt med en ny HEIS
+	-Sender melding til OrderManager om at den har fåt kontakt med en ny ElevatorControl
 
-MASTER:
+OrderManager:
 	Primærfunksjon: Hollder styr på alle ordre. Bestemer hvilken heis som skall utføre hver enkelt ordere. 
 
 	Variabler:
@@ -39,36 +39,36 @@ MASTER:
 	-HeiserPåNet // En liste med hvilke heiser som er på net.
 	-PrioriteringsNr// Hvilken prioritering den har for å bli master.  
 	-TimeOutOrdere// Sier hvor lenge hver aktive ordere har foregått.
-	-TimeOutMaster// Tiden siden sist den fikk et ping fra AKTIVEMASTER
+	-TimeOutMaster// Tiden siden sist den fikk et ping fra AKTIVEOrderManager
 
 	Interaksjon med andre moduler:
-	-Sender melding til NET(skall til HEIS) om setting av lys.
-	-Sender melding til NET(skall til HEIS) om ny ordere.
-	-Motar ny ordere fra HEIS(gjenom NET)
-	-Motar endring i tilstand til HEIS(gjenom NET)
-	-Motar melding om at ny heis har kommet(fra NET)
-	-Ber om å få tilstandene/variablene til de BACKUPMASTERene(gjenom NET)
-	-Sender kopi av oppdaterte tilsdander/variabler til BACKUPMASTERene(gjenom NET)
-	-Pinger BACKUPMASTERene(gjenom NET)
-	-Spør andre BACKUPMASTERe(gjenom NET) om den kan bli ACTIVEMASTER
-	-Sender melding til NET(skall til HK) om at ny ordere har blit prosesert riktig
-	-Motar ping(gjenom NET) fra andre heiser sin HK
-	-Motar melding fra andre heiser sin HK(gjenom NET) om at heisen er ut av drift. 
+	-Sender melding til NodeCommunication(skall til ElevatorControl) om setting av lys.
+	-Sender melding til NodeCommunication(skall til ElevatorControl) om ny ordere.
+	-Motar ny ordere fra ElevatorControl(gjenom NodeCommunication)
+	-Motar endring i tilstand til ElevatorControl(gjenom NodeCommunication)
+	-Motar melding om at ny heis har kommet(fra NodeCommunication)
+	-Ber om å få tilstandene/variablene til de BACKUPOrderManagerene(gjenom NodeCommunication)
+	-Sender kopi av oppdaterte tilsdander/variabler til BACKUPOrderManagerene(gjenom NodeCommunication)
+	-Pinger BACKUPOrderManagerene(gjenom NodeCommunication)
+	-Spør andre BACKUPOrderManagere(gjenom NodeCommunication) om den kan bli ACTIVEOrderManager
+	-Sender melding til NodeCommunication(skall til HK) om at ny ordere har blit prosesert riktig
+	-Motar ping(gjenom NodeCommunication) fra andre heiser sin HK
+	-Motar melding fra andre heiser sin HK(gjenom NodeCommunication) om at heisen er ut av drift. 
 
 HK(house kepper):
 	Primærfunksjon: Overvåker den generele helsen til sin heis.
 
 	Variabler: 
-	-TimeOutMasterAceptedOrder // tid siden ny ordere ble sendt til MASTER uten svar.
-	-Ordere// En liste med ordere som heisen har motat som ikke har blit akseptert av MASTER. 
+	-TimeOutMasterAceptedOrder // tid siden ny ordere ble sendt til OrderManager uten svar.
+	-Ordere// En liste med ordere som heisen har motat som ikke har blit akseptert av OrderManager. 
 	-TimeOutHeisNewState// tid siden heisen har oppdater sin tilstand. 
 
 	Interaksjon med andre moduler:
-	-Motar melding fra HEIS om at en ny ordere har blit motat.
-	-Pinger ACTIVEMASTER(gjenom NET) for å si at heisen er i live.
-	-Sender melding til ACTIVEMASTER(gjenom NET)om at heisen er ut av drift.
-    -Motar melding fra ACTIVEMASTER(gjenom NET) om at en ordere har blit prosessert riktig. 
-	-Sender ordere på nyt om det blir timeout til ACTIVEMASTER(gjenom NET).    
+	-Motar melding fra ElevatorControl om at en ny ordere har blit motat.
+	-Pinger ACTIVE-OrderManager(gjenom NodeCommunication) for å si at heisen er i live.
+	-Sender melding til ACTIVEOrderManager(gjenom NodeCommunication)om at heisen er ut av drift.
+    -Motar melding fra ACTIVEOrderManager(gjenom NodeCommunication) om at en ordere har blit prosessert riktig. 
+	-Sender ordere på nyt om det blir timeout til ACTIVEOrderManager(gjenom NodeCommunication).    
 
 
 
@@ -85,144 +85,189 @@ HK(house kepper):
 
 Senario endring i heis tilstand: 
 
-HEIS:
+ElevatorControl:
 1-Oppdaterer sin egen tilstand.
-2-Sender melding til MASTER sin tilstand.
+2-Sender melding til OrderManager sin tilstand.
 
-NET:
+NodeCommunication:
 -Videreformidler videreformidle informasjon..
 
-MASTER:
-3-Motar melding om endring i HEIStilstand.
+OrderManager:
+3-Motar melding om endring i ElevatorControltilstand.
 4-Oppdater tilstandsvariabler til heisen.
-5-Sende melding til BACKUPMASTER om nye tilstander.
+5-Sende melding til BACKUPOrderManager om nye tilstander.
 
 Senario ny ordre:
 
-HEIS:
-1-Sender melding til MASTER om ny ordere.
+ElevatorControl:
+1-Sender melding til OrderManager om ny ordere.
 6-Oppdater nåværende ordere.
 8-Skrur på lys.
 
-NET:
+NodeCommunication:
 -Videreformidler videreformidle informasjon.
 
-MASTER: 
+OrderManager: 
 2-Motar medlig om ny ordere.
 3-Leg til og oppdater alle heiskøer. 
-4-Sende melding til BAKUPMASTER med opp oppdaterte heiskøer.
-5-Oppdater alle HEISers ordere. 
-7-Send melding om å skru på lys til HEISer.
+4-Sende melding til BAKUPOrderManager med opp oppdaterte heiskøer.
+5-Oppdater alle ElevatorControlers ordere. 
+7-Send melding om å skru på lys til ElevatorControler.
 
 
 
 
 Senario ordere utført:
 
-HEIS:
-1-Sender melding til MASTER om at ordere er utført.
+ElevatorControl:
+1-Sender melding til OrderManager om at ordere er utført.
 6-Oppdater nåværende ordere.
 8-Skru av lys.
 
-NET:
+NodeCommunication:
 -Videreformidler videreformidle informasjon.
 
-MASTER:
+OrderManager:
 2-Motar meldign om at ordere er utført. 
 3-fjern utført ordere oppdater alle heiskøer.
-4-Send melding til BAKUPMASTER med oppdaterte heiskøer.
-5-Oppdater alle HEISers ordere.
-7-Send melding om skruv av lys til HEISer
+4-Send melding til BAKUPOrderManager med oppdaterte heiskøer.
+5-Oppdater alle ElevatorControlers ordere.
+7-Send melding om skruv av lys til ElevatorControler
 
 
 Senario bytte av master:
-BACKUPMASTER:
-1-PÅ gjentate manglende hearbeat fra MASTER.
-2-Bestem om BACKUPMASTER skall bli MASTER.
-3-Spør andre BACKUPMASTER om du kan bli MASTER.
-4-Få bekreftelse på at du kan bli MASTER.
-5-Bli MASTER.
+BACKUPOrderManager:
+1-PÅ gjentate manglende hearbeat fra OrderManager.
+2-Bestem om BACKUPOrderManager skall bli OrderManager.
+3-Spør andre BACKUPOrderManager om du kan bli OrderManager.
+4-Få bekreftelse på at du kan bli OrderManager.
+5-Bli OrderManager.
 
-MASTER:
-6-Si fra til alle NET at du er MASTER.
-8-send heartbeat til alle BACKUPMASTER.
+OrderManager:
+6-Si fra til alle NodeCommunication at du er OrderManager.
+8-send heartbeat til alle BACKUPOrderManager.
 9-Spørs alle heiser om deres tilstand.
 10-lagre alle heistilstander.
 11-Alle eksterne ordere fra heis som er ut av drift distrubueres til fungerende heiser.   
 12-Ta vare på interne ordere til heisen som er ut av drift.
-13-Send meldign til BAKUPMASTER med oppdaterte heiskøer. 
-14-Oppdater alle HEISers ordere. 
-15-Oppdater lys til alle HEISer.
+13-Send meldign til BAKUPOrderManager med oppdaterte heiskøer. 
+14-Oppdater alle ElevatorControlers ordere. 
+15-Oppdater lys til alle ElevatorControler.
   
 
-NET:
-7-Oppdater hvilken IP som er MASTER. 
+NodeCommunication:
+7-Oppdater hvilken IP som er OrderManager. 
 
-Senario ny heis på NET, finner ingen MASTERNET:
+Senario ny heis på NodeCommunication, finner ingen OrderManagerNodeCommunication:
 
-NYNODE-NET:
-1-Ny heis benyetter broadcasting (UDP) til å søke etter/koble til en MASTER heis. 
-2-Sette seg selv til MASTER.
-3-Med gjevne mellomrom se om det er andre MASTERe på nett.
+NYNODE-NodeCommunication:
+1-Ny heis benyetter broadcasting (UDP) til å søke etter/koble til en OrderManager heis. 
+2-Sette seg selv til OrderManager.
+3-Med gjevne mellomrom se om det er andre OrderManagere på nett.
 
 
-Senario ny heis på NET, FINNER MASTERNET:
-NYNODE-NET:
-1-Ny heis benyetter broadcasting (UDP) til å søke etter/koble til en MASTER heis.
+Senario ny heis på NodeCommunication, FINNER OrderManagerNodeCommunication:
+NYNODE-NodeCommunication:
+1-Ny heis benyetter broadcasting (UDP) til å søke etter/koble til en OrderManager heis.
 		
-MASTERNODE-NET:
-2-Setter opp en TCP forbindelse med NYNET. 
+OrderManagerNODE-NodeCommunication:
+2-Setter opp en TCP forbindelse med NYNodeCommunication. 
 3-Legger den nye heisen inn i sin interne oversikt over heiser på nett.
-4-Sender melding til MASTER om at en ny heis har kommet.
+4-Sender melding til OrderManager om at en ny heis har kommet.
 17-send oppdatering av netverkslisten til alle noder.  
 
-MASTERNODE-MASTER:
+OrderManagerNODE-OrderManager:
 5-Oppretter en ny kø for heisen. 
 6-Lagger nye variabler for å ta vare på ny heis sin tilstand.
-7-MASTER ber ny heis om tilstandsvariabler.
-9-MASTER lagrer ny tilstandsvariabler fra den nye heisen.
-10-MASTER ber om å få den nye heisens kø.
-13-Legge til køen fra NYNODE-MASTER og opppdater alle heiskøer(legger også inne eventuele interne ordere fra NYEHEIS som var i master fra før).
-14-Oppdaterer alle BACKUPMASTER med de nye heiskøene. 
-15-Oppdaterer alle HEISer med nye ordere. 
-16-Oppdater lys til alle HEISer.
+7-OrderManager ber ny heis om tilstandsvariabler.
+9-OrderManager lagrer ny tilstandsvariabler fra den nye heisen.
+10-OrderManager ber om å få den nye heisens kø.
+13-Legge til køen fra NYNODE-OrderManager og opppdater alle heiskøer(legger også inne eventuele interne ordere fra NYEElevatorControl som var i master fra før).
+14-Oppdaterer alle BACKUPOrderManager med de nye heiskøene. 
+15-Oppdaterer alle ElevatorControler med nye ordere. 
+16-Oppdater lys til alle ElevatorControler.
 
 
-NYNODE-HEIS:
-8-Sender tilstandsvariabler til MASTER.
+NYNODE-ElevatorControl:
+8-Sender tilstandsvariabler til OrderManager.
 
-NYNODE-MASTER:
-11-sender sin kø informasjon over til MASTERNODE-MASTER.
-12-Setter seg sel som BACKUPMASTER. 
+NYNODE-OrderManager:
+11-sender sin kø informasjon over til OrderManagerNODE-OrderManager.
+12-Setter seg sel som BACKUPOrderManager. 
 
 
-Senario heis forsviner fra NET:
-MASTERNODE-NET:
-1-Sender meldgin til MASTER om at en heis er borte.
+Senario heis forsviner fra NodeCommunication:
+OrderManagerNODE-NodeCommunication:
+1-Sender meldgin til OrderManager om at en heis er borte.
 7-Send oppdatering til alle noder av netverkslisten.  
 
 
-MASTERNODE-MASTER:
+OrderManagerNODE-OrderManager:
 2-Oppdater liste over tilgjengelige heiser.
 3-Lagre de interne ordrene til heisen som forsvant et egnet sted. 
 4-Oppdaterer heiskøene for alle heiser for å ta hånd om de eksterne ordrene til heisen som forsvant. 
-5-Oppdater alle BACKUPMASTER med nye heiskøer. 
-6-Oppdater alle HEISER med nye ordere. 
+5-Oppdater alle BACKUPOrderManager med nye heiskøer. 
+6-Oppdater alle ElevatorControlER med nye ordere. 
 
 
 
 
 Senario initisialisering:     
-HEIS:
+ElevatorControl:
 1-Sett heisen i en kjent tilstand.
 2-Oppdater egene tilstandsvariabler. 
 
-NET:
-4-Søke etter andre heiser(Gjør Senario ny hei på NEt,FINNER MASTERNET).
+NodeCommunication:
+4-Søke etter andre heiser(Gjør Senario ny hei på NEt,FINNER OrderManagerNodeCommunication).
 
-MASTER:
+OrderManager:
 3-Oppreter seg sel som master. 
 
 
+
+
+
+
+#################################################################
+Fault tolerance and avoidance:
+
+- Process pair: Master prosessen som holder kontroll på hva de forskjellige heisene skal gjøre og avgjøre hvilke heiser som skal ta hvilke ordre, lagrer kopier av seg selv som oppdateres hver gang det kommer en ny melding om tilstandsendring eller ny ordre.
+De andre backup master prosessene tar over i tilfelle prosessen kjæser eller nettet faller ut. Benytter hearthbeat meldinger fra master i masternode til backupmasters i de andre nodene for å kunne detektere om master har kræsjet eller hengt seg.
+
+- n-plex lagring: lagre heistilstand (heis og master/backupmaster), køtilstand(master/backupmaster) og nettverksstatus(nettverksmodul) i tre eksemplarer, og hver gang det skal leses fra minne skal de tre versjonene sammenlignes og hvis det er en forskjell mellom de tre versjonene skal det genereres en feilmelding til en logg og det resultatet som flest av de tre versjonene har vil da være riktig data. Dette gjøres for å hindre at bit-flips kan sette heisen i en uriktig tilstand.
+
+- Benytte TCP for transport av data mellom nodene for å hindre at data blir korrupert under transport.
+
+(- Acknolage meldinger på enkelte deler av data og be om resendelsefor å unngå at dataen blir borte.)
+(-Legge til parity bits i meldinger over channels for å kunne detektere bit-flips.)
+
+
+
+#################################################################
+Oppdeling av system:
+
+
+
+NodeCommunication:
+dele opp i:
+1- Modul som holder orden på forbindelser; IP, port, nodestatus (master/backup). Passer på at data ikke blir korrupert av bitflips med n-flex lagring. {nodeConnectionTable}
+
+2- Modul med funksjoner rundt det å sende og motta data mellom nodene. {nodeCommunicationModule}
+
+3- Modul som bestemmer oppførsel til nettverkstråd som benytter de andre net modulene. {nodeCommunicationThread}
+
+ElevatorControl:
+dele opp i:
+1- Modul som holder orden på heis status og neste ordre. Sørger for at heis status data ikke blir korrupert. {ElevatorStatusModule}
+2- modul som bestemmer oppførsel til heisDriverTråd. {ElevatorControlThread}
+3- Underliggende heisdriver. {elev.h, elec.c}
+(4- Underliggende kodeoversetter fra C til Go {})
+
+OrderManager:
+dele opp i:
+1- Modul som holder orden på heisenes køer og heisStatus, og at disse ikke blir korrupert {orderQueueModule}
+2- Modul som inneholder "costFunction" som blir brukt til å velge hvilken heis som skal gjøre hva. {orderEvaluatorModule}
+3- Modul som bestemmer oppførsel til ordrehåndteringsTråden. {orderHandlerThread}
+4- Modul som inneholder hearthbeat logikk og backupNode overtagelses logikk {ProcessPairControl}
 
 
