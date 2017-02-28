@@ -20,6 +20,21 @@ procedure exercise7 is
         begin
             ------------------------------------------
             -- PART 3: Complete the exit protocol here
+			if Finished_Gate_Open = False then
+				Should_Commit := True;
+			end if;
+			if Finished'Count = 0 then
+				Aborted := False;
+			end if;
+			
+			Finished_Gate_Open := True;
+			if Finished'Count = 0 then
+				Finished_Gate_Open := false;
+			end if;
+			
+			if Aborted = True then
+				Should_Commit := False;
+			end if;
             ------------------------------------------
         end Finished;
 
@@ -40,9 +55,19 @@ procedure exercise7 is
     
     function Unreliable_Slow_Add (x : Integer) return Integer is
     Error_Rate : Constant := 0.15;  -- (between 0 and 1)
-    begin
+    d : float;
+	begin
         -------------------------------------------
         -- PART 1: Create the transaction work here
+		if Random(Gen) >= Error_Rate then
+			d := 3.50 + 1.0*Random(Gen);
+			delay Duration(d);
+			--x := x + 10;
+			return x+10;
+		else
+			d := 0.50 + 0.50*Random(Gen);
+			raise Count_Failed;
+		end if;
         -------------------------------------------
     end Unreliable_Slow_Add;
 
@@ -62,7 +87,17 @@ procedure exercise7 is
             Round_Num := Round_Num + 1;
 
             ---------------------------------------
-            -- PART 2: Do the transaction work here             
+            -- PART 2: Do the transaction work here
+			begin
+			Num := Unreliable_Slow_Add(Num);
+			Manager.Finished;
+			exception
+				when Count_Failed =>
+					Manager.Signal_Abort;
+					Manager.Finished;
+				when others =>
+					Put_Line ("Some Error Accured!");
+			end;
             ---------------------------------------
             
             if Manager.Commit = True then
@@ -73,6 +108,7 @@ procedure exercise7 is
                              " to" & Integer'Image(Prev));
                 -------------------------------------------
                 -- PART 2: Roll back to previous value here
+				Num := Prev;
                 -------------------------------------------
             end if;
 
