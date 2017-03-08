@@ -1,7 +1,7 @@
 with Ada.Text_IO, Ada.Integer_Text_IO, Ada.Numerics.Float_Random;
 use  Ada.Text_IO, Ada.Integer_Text_IO, Ada.Numerics.Float_Random;
 
-procedure exercise7 is
+procedure exercise8 is
 
     Count_Failed    : exception;    -- Exception to be raised when counting fails
     Gen             : Generator;    -- Random number generator
@@ -81,6 +81,7 @@ procedure exercise7 is
                 select
                     Manager.Wait_Until_Aborted;
                     num := num + 5;
+                    Put_Line ("Forward Error Recovery!");
                 then abort
                     begin
                         Num := Unreliable_Slow_Add(Num);
@@ -90,8 +91,9 @@ procedure exercise7 is
                         when others =>
                             Put_Line ("Some Error Accured!");
                     end;
+                    Manager.Finished;
                 end select;
-                Manager.Finished;
+                
             end;
 
             ---------------------------------------
@@ -112,4 +114,4 @@ procedure exercise7 is
 
 begin
     Reset(Gen); -- Seed the random number generator
-end exercise7;
+end exercise8;
